@@ -1,6 +1,7 @@
 package com.pluralsight;
 
 public class LeaseContract extends Contract{
+    // ID auto increments
     private double expectedEndingVal;
     private double leaseFee;
 

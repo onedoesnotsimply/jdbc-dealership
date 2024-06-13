@@ -9,6 +9,7 @@ public class Vehicle {
     private String color;
     private int odometer;
     private double price;
+    private boolean isSold;
 
     @Override
     public String toString() {
@@ -33,6 +34,7 @@ public class Vehicle {
         this.color=color;
         this.odometer=odometer;
         this.price=price;
+        this.isSold=false;
     }
 
     public String getColor() {
@@ -97,5 +99,13 @@ public class Vehicle {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public boolean isSold() {
+        return isSold;
+    }
+
+    public void setSold(boolean sold) {
+        isSold = sold;
     }
 }

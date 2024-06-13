@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Dealership {
+    private int id;
     private String name;
     private String address;
     private String phone;
@@ -11,7 +12,8 @@ public class Dealership {
     ArrayList<Vehicle> inventory;
     ArrayList<Vehicle> searchResults;
 
-    public Dealership(String name, String address, String phone) {
+    public Dealership(int id, String name, String address, String phone) {
+        this.id=id;
         this.name=name;
         this.address=address;
         this.phone=phone;
@@ -110,9 +112,27 @@ public class Dealership {
         inventory.remove(vehicle);
     }
 
+    @Override
+    public String toString() {
+        return "Dealership{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
+
+// Getters and setters
 
 
-    // Getters and setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

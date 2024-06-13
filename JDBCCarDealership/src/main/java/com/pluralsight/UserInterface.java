@@ -1,5 +1,6 @@
 package com.pluralsight;
 
+import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -9,11 +10,29 @@ public class UserInterface {
     static Scanner scanner = new Scanner(System.in);
     private Dealership dealership;
 
-    public UserInterface(){
+    private DataSource dataSource;
+
+    public UserInterface(DataSource dataSource){
+        this.dataSource=dataSource;
+    }
+
+    // Replaces innit()
+    public void setDealership(){
+        DealershipDao dealershipDao = new DealershipDao(dataSource);
+        List<Dealership> dealerships = dealershipDao.getAllDealerships();
+        dealerships.forEach(System.out::println);
+        System.out.print("Enter the ID of the dealership you would like to see : ");
+        int idChoice = scanner.nextInt();
+
+        Dealership dealership = dealerships.get(idChoice-1);
+
+        this.dealership=dealership;
     }
 
     public void display() {
-        init();
+        VehicleDao vehicleDao = new VehicleDao(dataSource);
+        setDealership();
+        //init();
         while(true) {
             System.out.println("Menu Screen");
             System.out.println("1) Search by Price");
@@ -35,7 +54,7 @@ public class UserInterface {
 
                 switch (choice){
                     case 1:
-                        processGetByPriceRequest();
+                        processGetByPriceRequest(vehicleDao);
                         break;
                     case 2:
                         processGetByMakeModelRequest();
@@ -53,7 +72,7 @@ public class UserInterface {
                         processGetByVehicleType();
                         break;
                     case 7:
-                        processGetAllVehiclesRequest();
+                        processGetAllVehiclesRequest(vehicleDao);
                         break;
                     case 8:
                         processAddVehicleRequest();
@@ -163,7 +182,7 @@ public class UserInterface {
             System.out.println("Vehicle removed from inventory");
 
             // Save dealership changes
-            DealershipFileManager.saveDealership(dealership);
+            //DealershipFileManager.saveDealership(dealership);
 
         } else if (choice == 2) { // 2) Lease
             // Prompt for Lease data
@@ -182,7 +201,7 @@ public class UserInterface {
             // Remove the vehicle from the inventory and save the dealership changes
             dealership.removeVehicle(inputVehicle);
             System.out.println("Vehicle removed from inventory");
-            DealershipFileManager.saveDealership(dealership);
+            //DealershipFileManager.saveDealership(dealership);
 
 
         } else {
@@ -192,7 +211,7 @@ public class UserInterface {
         }
     }
 
-    public void processGetByPriceRequest() {
+    public void processGetByPriceRequest(VehicleDao vehicleDao) {
         // Prompt for price range
         System.out.print("Enter the minimum price : $");
         double min = scanner.nextDouble();
@@ -201,7 +220,9 @@ public class UserInterface {
         scanner.nextLine(); // Consume the newline
 
         // Call the search method
-        displayVehicles(dealership.getVehiclesByPrice(min, max));
+        //displayVehicles(dealership.getVehiclesByPrice(min, max));
+        List<Vehicle> vehicles = vehicleDao.getVehiclesByPrice(this.dealership.getId(),min,max);
+        vehicles.forEach(System.out::println);
     }
 
     public void processGetByMakeModelRequest() {
@@ -257,9 +278,11 @@ public class UserInterface {
         displayVehicles(dealership.getVehiclesByType(vehicleType));
     }
 
-    public void processGetAllVehiclesRequest() {
+    public void processGetAllVehiclesRequest(VehicleDao vehicleDao) {
         // Display vehicles in the inventory
-        displayVehicles(dealership.getAllVehicles());
+        //displayVehicles(dealership.getAllVehicles());
+        List<Vehicle> vehicles = vehicleDao.getAllVehicles(this.dealership.getId());
+        vehicles.forEach(System.out::println);
     }
 
     public void processAddVehicleRequest() {
@@ -297,7 +320,7 @@ public class UserInterface {
         System.out.println("Vehicle added successfully");
 
         // Save the dealership changes
-        DealershipFileManager.saveDealership(dealership);
+        //DealershipFileManager.saveDealership(dealership);
     }
 
     public void processRemoveVehicleRequest() {
@@ -322,13 +345,13 @@ public class UserInterface {
             System.out.println("Vehicle removed successfully"); // Print out a success message
 
             // Save the dealership changes
-            DealershipFileManager.saveDealership(dealership);
+            //DealershipFileManager.saveDealership(dealership);
         }
     }
 
     // Private methods
     private void init() {
-        this.dealership = DealershipFileManager.getDealership();
+        //this.dealership = DealershipFileManager.getDealership();
     }
 
     private void displayVehicles(List<Vehicle> vehicles) {

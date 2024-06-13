@@ -52,8 +52,8 @@ public class AdminUserInterface {
                     getAllLeaseContracts();
                     break;
                 case 5:
-                    UserInterface ui = new UserInterface();
-                    ui.display();
+                    //UserInterface ui = new UserInterface();
+                    //ui.display();
                     break;
                 default:
                     System.out.println("Invalid input\nInput out of range");

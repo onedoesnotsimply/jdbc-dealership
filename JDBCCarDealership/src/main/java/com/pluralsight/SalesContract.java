@@ -1,6 +1,7 @@
 package com.pluralsight;
 
 public class SalesContract extends Contract {
+    // ID is auto incremented
     private double salesTaxAmount;
     private double recordingFee;
     private double processingFee;
