@@ -2,6 +2,7 @@ package com.pluralsight;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -20,8 +21,9 @@ public class UserInterface {
     public void setDealership(){
         DealershipDao dealershipDao = new DealershipDao(dataSource);
         List<Dealership> dealerships = dealershipDao.getAllDealerships();
+        System.out.println("Dealership Select");
         dealerships.forEach(System.out::println);
-        System.out.print("Enter the ID of the dealership you would like to see : ");
+        System.out.print("Enter the ID of the dealership you would like to select : ");
         int idChoice = scanner.nextInt();
 
         Dealership dealership = dealerships.get(idChoice-1);
@@ -34,6 +36,7 @@ public class UserInterface {
         setDealership();
         //init();
         while(true) {
+            System.out.printf("\nWelcome to %s\n",this.dealership.getName());
             System.out.println("Menu Screen");
             System.out.println("1) Search by Price");
             System.out.println("2) Search by Make and Model");
@@ -45,7 +48,8 @@ public class UserInterface {
             System.out.println("8) Add a Vehicle");
             System.out.println("9) Remove a Vehicle");
             System.out.println("10) Purchase/Lease a Vehicle");
-            System.out.println("11) Admin");
+            System.out.println("11) Admin Screen");
+            System.out.println("12) Return to Dealership Select");
             System.out.println("0) Exit");
 
             try { // Enforce input type
@@ -57,34 +61,37 @@ public class UserInterface {
                         processGetByPriceRequest(vehicleDao);
                         break;
                     case 2:
-                        processGetByMakeModelRequest();
+                        processGetByMakeModelRequest(vehicleDao);
                         break;
                     case 3:
-                        processGetByYearRequest();
+                        processGetByYearRequest(vehicleDao);
                         break;
                     case 4:
-                        processGetByColorRequest();
+                        processGetByColorRequest(vehicleDao);
                         break;
                     case 5:
-                        processGetByMileageRequest();
+                        processGetByMileageRequest(vehicleDao);
                         break;
                     case 6:
-                        processGetByVehicleType();
+                        processGetByVehicleType(vehicleDao);
                         break;
                     case 7:
                         processGetAllVehiclesRequest(vehicleDao);
                         break;
                     case 8:
-                        processAddVehicleRequest();
+                        processAddVehicleRequest(vehicleDao);
                         break;
                     case 9:
-                        processRemoveVehicleRequest();
+                        processRemoveVehicleRequest(vehicleDao);
                         break;
                     case 10:
                         processPurchaseOrLeaseRequest();
                         break;
                     case 11:
                         processAdmin();
+                        break;
+                    case 12:
+                        setDealership();
                         break;
                     case 0:
                         scanner.close();
@@ -220,12 +227,11 @@ public class UserInterface {
         scanner.nextLine(); // Consume the newline
 
         // Call the search method
-        //displayVehicles(dealership.getVehiclesByPrice(min, max));
         List<Vehicle> vehicles = vehicleDao.getVehiclesByPrice(this.dealership.getId(),min,max);
         vehicles.forEach(System.out::println);
     }
 
-    public void processGetByMakeModelRequest() {
+    public void processGetByMakeModelRequest(VehicleDao vehicleDao) {
         // Prompt
         System.out.print("Enter the make : ");
         String make = scanner.nextLine();
@@ -233,10 +239,11 @@ public class UserInterface {
         String model = scanner.nextLine();
 
         // Display
-        displayVehicles(dealership.getVehiclesByMakeModel(make,model));
+        List<Vehicle> vehicles = vehicleDao.getVehiclesByMakeModel(this.dealership.getId(),make,model);
+        vehicles.forEach(System.out::println);
     }
 
-    public void processGetByYearRequest() {
+    public void processGetByYearRequest(VehicleDao vehicleDao) {
         // Prompt
         System.out.print("Enter the minimum year : ");
         int min = scanner.nextInt();
@@ -245,19 +252,21 @@ public class UserInterface {
         scanner.nextLine(); // Consume the newline
 
         // Display
-        displayVehicles(dealership.getVehiclesByYear(min,max));
+        List<Vehicle> vehicles = vehicleDao.getVehiclesByYear(this.dealership.getId(),min,max);
+        vehicles.forEach(System.out::println);
     }
 
-    public void processGetByColorRequest() {
+    public void processGetByColorRequest(VehicleDao vehicleDao) {
         // Prompt
         System.out.print("Enter a color : ");
         String color = scanner.nextLine();
 
         // Display
-        displayVehicles(dealership.getVehiclesByColor(color));
+        List<Vehicle> vehicles = vehicleDao.getVehiclesByColor(this.dealership.getId(),color);
+        vehicles.forEach(System.out::println);
     }
 
-    public void processGetByMileageRequest() {
+    public void processGetByMileageRequest(VehicleDao vehicleDao) {
         // Prompt
         System.out.print("Enter minimum mileage : ");
         int min = scanner.nextInt();
@@ -266,26 +275,27 @@ public class UserInterface {
         scanner.nextLine(); // Consume the newline
 
         // Display
-        displayVehicles(dealership.getVehiclesByMileage(min,max));
+        List<Vehicle> vehicles = vehicleDao.getVehiclesByMileage(this.dealership.getId(),min,max);
+        vehicles.forEach(System.out::println);
     }
 
-    public void processGetByVehicleType() {
+    public void processGetByVehicleType(VehicleDao vehicleDao) {
         // Prompt
         System.out.print("Enter the vehicle type : ");
         String vehicleType = scanner.nextLine();
 
         // Display
-        displayVehicles(dealership.getVehiclesByType(vehicleType));
+        List<Vehicle> vehicles = vehicleDao.getVehiclesByType(this.dealership.getId(),vehicleType);
+        vehicles.forEach(System.out::println);
     }
 
     public void processGetAllVehiclesRequest(VehicleDao vehicleDao) {
         // Display vehicles in the inventory
-        //displayVehicles(dealership.getAllVehicles());
         List<Vehicle> vehicles = vehicleDao.getAllVehicles(this.dealership.getId());
         vehicles.forEach(System.out::println);
     }
 
-    public void processAddVehicleRequest() {
+    public void processAddVehicleRequest(VehicleDao vehicleDao) {
         // Prompt
         System.out.println("Please enter the following information");
 
@@ -313,50 +323,16 @@ public class UserInterface {
         // Create the new vehicle object
         Vehicle vehicle = new Vehicle(vin,year,make,model,vehicleType,color,odometer,price);
 
-        // Add the vehicle to the dealership
-        dealership.addVehicle(vehicle);
-
-        // Print out a confirmation message
-        System.out.println("Vehicle added successfully");
-
-        // Save the dealership changes
-        //DealershipFileManager.saveDealership(dealership);
+        // Add vehicle to db
+        vehicleDao.addVehicle(this.dealership.getId(), vehicle);
     }
 
-    public void processRemoveVehicleRequest() {
+    public void processRemoveVehicleRequest(VehicleDao vehicleDao) {
         // Prompt for the vin of the vehicle to remove
         System.out.print("Enter the VIN of the vehicle you want to remove : ");
         int vin = scanner.nextInt();
         scanner.nextLine(); // Consume the newline
 
-        // Loop through the inventory for the vehicle with the input VIN number
-        Vehicle toRemove = null; // Initialize Vehicle
-        for (Vehicle vehicle : dealership.getAllVehicles()){
-            if (vehicle.getVin() == vin){ // If the vehicle exists
-                // Change the value of toRemove to the vehicle
-                toRemove = vehicle;
-            }
-        }
-        if (toRemove == null) { // If the vehicle wasn't in the inventory
-            System.out.println("Invalid input\nPlease enter a valid VIN"); // Print an error message
-        } else {
-            // Remove the vehicle
-            dealership.removeVehicle(toRemove);
-            System.out.println("Vehicle removed successfully"); // Print out a success message
-
-            // Save the dealership changes
-            //DealershipFileManager.saveDealership(dealership);
-        }
-    }
-
-    // Private methods
-    private void init() {
-        //this.dealership = DealershipFileManager.getDealership();
-    }
-
-    private void displayVehicles(List<Vehicle> vehicles) {
-        for (Vehicle vehicle : vehicles) {
-            System.out.println(vehicle);
-        }
+        vehicleDao.removeVehicle(vin);
     }
 }
