@@ -33,6 +33,9 @@ public class UserInterface {
 
     public void display() {
         VehicleDao vehicleDao = new VehicleDao(dataSource);
+        SalesDao salesDao = new SalesDao(dataSource);
+        LeaseDao leaseDao = new LeaseDao(dataSource);
+        // LeaseDao leaseDao = new LeaseDao(dataSource);
         setDealership();
         //init();
         while(true) {
@@ -85,7 +88,7 @@ public class UserInterface {
                         processRemoveVehicleRequest(vehicleDao);
                         break;
                     case 10:
-                        processPurchaseOrLeaseRequest();
+                        processPurchaseOrLeaseRequest(salesDao, leaseDao, vehicleDao);
                         break;
                     case 11:
                         processAdmin();
@@ -107,7 +110,7 @@ public class UserInterface {
     }
 
     public void processAdmin(){
-        AdminUserInterface admin = new AdminUserInterface();
+        AdminUserInterface admin = new AdminUserInterface(dataSource);
         System.out.println("Enter password : ");
         int password = scanner.nextInt();
         if (!admin.checkPassword(password)){
@@ -118,7 +121,7 @@ public class UserInterface {
         }
     }
 
-    public void processPurchaseOrLeaseRequest() {
+    public void processPurchaseOrLeaseRequest(SalesDao salesDao, LeaseDao leaseDao, VehicleDao vehicleDao) {
         // Prompt for whether this is a purchase or a lease
         System.out.println("1) Purchase");
         System.out.println("2) Lease");
@@ -126,28 +129,22 @@ public class UserInterface {
         scanner.nextLine();
 
         // Prompt for general contract data before using the choice
-        System.out.print("Enter the current date : ");
-        String date=scanner.nextLine();
+        LocalDate date = LocalDate.now();
+
         System.out.print("Enter your full name : ");
         String name = scanner.nextLine();
+
         System.out.print("Enter your email address : ");
         String email = scanner.nextLine();
+
         System.out.print("Enter the VIN of the vehicle : ");
         int vin = scanner.nextInt();
         scanner.nextLine();
-        Vehicle inputVehicle = null;
-
-        // Loop through the dealership inventory to find the correct vehicle
-        for (Vehicle vehicle : dealership.getAllVehicles()){
-            if (vehicle.getVin()==vin){
-                 inputVehicle=vehicle;
-            }
-        }
+        Vehicle inputVehicle = vehicleDao.getVehicleByVin(vin);
 
         // Make sure that the vehicle exists
         if (inputVehicle==null) {
-            // If it doesn't print an error message and send the user back to the homescreen
-            System.out.println("Invalid VIN\nVehicle does not exist");
+            // If it doesn't send the user back to the homescreen
             display();
         }
 
@@ -160,61 +157,29 @@ public class UserInterface {
             display();
         }
 
-        if (choice == 1){ // Choice was between 1) Purchase
+        if (choice == 1){
             // Prompt for SalesContract data
-            System.out.print("Enter the sales tax percentage as a whole number : ");
-            double salesTax = scanner.nextDouble();
-            System.out.print("Enter the contract recording fee : ");
-            double recordingFee = scanner.nextDouble();
-            System.out.print("Enter the processing fee : ");
-            double processingFee = scanner.nextDouble();
-            scanner.nextLine();
             System.out.print("Would you like to finance? (Y/N) : ");
             String finance = scanner.nextLine();
-
             // Create a SalesContract with a default finance input of false
-            SalesContract salesContract = new SalesContract(date,name,email,inputVehicle,salesTax,recordingFee,processingFee,false);
-
+            SalesContract salesContract = new SalesContract(this.dealership.getId(),date,name,email,inputVehicle,false);
             // Check the finance input
             if (finance.equalsIgnoreCase("y")){ // If they did want to finance
                 salesContract.setFinanced(true); // Set the finance option to true
             }
+            // INSERT INTO db
+            salesDao.addSalesContract(this.dealership.getId(), salesContract);
 
-            // Write the SalesContract to the csv
-            ContractDataManager.saveContract(salesContract);
-            System.out.println("Contract saved");
-
-            // Remove the vehicle from the inventory
-            dealership.removeVehicle(inputVehicle);
-            System.out.println("Vehicle removed from inventory");
-
-            // Save dealership changes
-            //DealershipFileManager.saveDealership(dealership);
-
-        } else if (choice == 2) { // 2) Lease
-            // Prompt for Lease data
-            System.out.print("Enter the expected ending value percentage as a whole number: ");
-            double expectedEndingVal = scanner.nextDouble();
-            System.out.print("Enter the lease fee percentage as a whole number : ");
-            double leaseFee = scanner.nextDouble();
-
+        } else if (choice == 2) {
             // Instantiate a LeaseContract
-            LeaseContract leaseContract = new LeaseContract(date,name,email,inputVehicle,expectedEndingVal,leaseFee);
-
-            // Write the LeaseContract to the csv
-            ContractDataManager.saveContract(leaseContract);
-            System.out.println("Contract saved");
-
-            // Remove the vehicle from the inventory and save the dealership changes
-            dealership.removeVehicle(inputVehicle);
-            System.out.println("Vehicle removed from inventory");
-            //DealershipFileManager.saveDealership(dealership);
-
+            LeaseContract leaseContract = new LeaseContract(this.dealership.getId(),date,name,email,inputVehicle);
+            // INSERT INTO db
+            leaseDao.addLeaseContract(this.dealership.getId(), leaseContract);
 
         } else {
             System.out.println("Invalid choice");
             scanner.nextLine();
-            processPurchaseOrLeaseRequest();
+            processPurchaseOrLeaseRequest(salesDao, leaseDao, vehicleDao);
         }
     }
 

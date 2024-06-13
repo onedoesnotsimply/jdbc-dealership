@@ -1,6 +1,8 @@
 package com.pluralsight;
 
 public abstract class Contract {
+    //private int id;
+    private int dealershipId;
     private String date;
     private String name;
     private String email;
@@ -8,7 +10,8 @@ public abstract class Contract {
     private double totalPrice;
     private double monthlyPayment;
 
-    public Contract(String date, String name, String email, Vehicle vehicleSold) {
+    public Contract(int dealershipId, String date, String name, String email, Vehicle vehicleSold) {
+        //this.id=id;
         this.date = date;
         this.name = name;
         this.email = email;

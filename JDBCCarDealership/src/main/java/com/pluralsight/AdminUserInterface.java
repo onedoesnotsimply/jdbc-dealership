@@ -1,5 +1,6 @@
 package com.pluralsight;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,11 +8,13 @@ import java.util.Scanner;
 
 public class AdminUserInterface {
     private int password;
-    static ArrayList<String> contracts;
+    private DataSource dataSource;
+    //static ArrayList<String> contracts;
 
-    public AdminUserInterface() {
+    public AdminUserInterface(DataSource dataSource) {
+        this.dataSource=dataSource;
         this.password = 123;
-        contracts = new ArrayList<>();
+        //contracts = new ArrayList<>();
     }
 
     public boolean checkPassword(int userInput){
@@ -22,56 +25,42 @@ public class AdminUserInterface {
     }
 
     public void adminDisplay() {
-        init(); // Populate the contracts array
-        Collections.reverse(contracts);
+        //init(); // Populate the contracts array
+        //Collections.reverse(contracts);
         while(true){
             System.out.println("Admin Menu");
-            System.out.println("1) List All Contracts");
-            System.out.println("2) List Last 10 Contracts");
-            System.out.println("3) List All Sales Contracts");
-            System.out.println("4) List All Lease Contracts");
+            System.out.println("1) List All Sales Contracts");
+            System.out.println("2) List All Lease Contracts");
+            System.out.println("3) List Last 10 Contracts");
             System.out.println("5) Return to User Interface");
 
-
             Scanner scanner = new Scanner(System.in);
-
-
             int choice = scanner.nextInt();
 
             switch (choice){
                 case 1:
-                    getAllContracts();
+                    getAllSalesContracts(salesDao);
                     break;
                 case 2:
-                    getLastTenContracts();
+                    getAllLeaseContracts(leaseDao);
                     break;
                 case 3:
-                    getAllSalesContracts();
+                    getLastTenContracts();
                     break;
                 case 4:
-                    getAllLeaseContracts();
-                    break;
-                case 5:
-                    //UserInterface ui = new UserInterface();
-                    //ui.display();
+                    UserInterface ui = new UserInterface(dataSource);
+                    ui.display();
                     break;
                 default:
                     System.out.println("Invalid input\nInput out of range");
                     break;
             }
-
-
-
         }
-
     }
 
-    public static void getAllLeaseContracts() {
-        for (String contract : contracts) {
-            if (contract.split("\\|")[0].equalsIgnoreCase("lease")){
-                System.out.println(contract);
-            }
-        }
+    public static void getAllLeaseContracts(LeaseDao leaseDao) {
+        List<LeaseContract> leaseContracts = leaseDao.getAllLeaseContracts();
+        leaseContracts.forEach(System.out::println);
     }
 
     public static void getLastTenContracts() {
@@ -80,12 +69,8 @@ public class AdminUserInterface {
         }
     }
 
-    public static void getAllSalesContracts() {
-        for (String contract : contracts) {
-            if (contract.split("\\|")[0].equalsIgnoreCase("sale")){
-                System.out.println(contract);
-            }
-        }
+    public static void getAllSalesContracts(SalesDao salesDao) {
+        List<SalesContract> salesContracts = salesDao.getAllSalesContracts();
     }
 
     private void init() {

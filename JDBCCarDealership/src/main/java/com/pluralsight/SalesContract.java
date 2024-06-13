@@ -1,17 +1,26 @@
 package com.pluralsight;
 
+import java.time.LocalDate;
+
 public class SalesContract extends Contract {
     // ID is auto incremented
+    //private int id;
     private double salesTaxAmount;
     private double recordingFee;
     private double processingFee;
     private boolean isFinanced;
 
-    public SalesContract(String date, String name, String email, Vehicle vehicleSold, double salesTaxAmount, double recordingFee, double processingFee, boolean isFinanced) {
-        super(date, name, email, vehicleSold);
-        this.salesTaxAmount = salesTaxAmount;
-        this.recordingFee = recordingFee;
-        this.processingFee = processingFee;
+    public SalesContract(int dealershipId, LocalDate date, String name, String email, Vehicle vehicleSold, boolean isFinanced) {
+        super(dealershipId, String.valueOf(date), name, email, vehicleSold);
+        this.salesTaxAmount = 0.05;
+        this.recordingFee = 100.0;
+
+        if (vehicleSold.getPrice()<10000){
+            this.processingFee = 295;
+        } else {
+            this.processingFee = 495;
+        }
+
         this.isFinanced = isFinanced;
     }
 
@@ -22,10 +31,10 @@ public class SalesContract extends Contract {
         double totalPrice = 0;
         // Check if user chose the finance option
         if (isFinanced) { // If they did calculate the total cost with the monthly payment
-            totalPrice = (recordingFee+processingFee+getMonthlyPayment())*(salesTaxAmount/100);
+            totalPrice = (recordingFee+processingFee+getMonthlyPayment())*(salesTaxAmount);
         } else { // If they didn't calculate the total cost with the full cost of the vehicle
             totalPrice = (getVehicleSold().getPrice()+recordingFee+processingFee);
-            totalPrice += totalPrice*(salesTaxAmount/100);
+            totalPrice += totalPrice*(salesTaxAmount);
         }
 
         return totalPrice;
@@ -51,6 +60,7 @@ public class SalesContract extends Contract {
 
 
     // Getters and setters
+
     public double getSalesTaxAmount() {
         return salesTaxAmount;
     }

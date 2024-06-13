@@ -1,14 +1,17 @@
 package com.pluralsight;
 
+import java.time.LocalDate;
+
 public class LeaseContract extends Contract{
-    // ID auto increments
+    //private int id;
     private double expectedEndingVal;
     private double leaseFee;
 
-    public LeaseContract(String date, String name, String email, Vehicle vehicleSold, double expectedEndingVal, double leaseFee) {
-        super(date, name, email, vehicleSold);
-        this.expectedEndingVal = expectedEndingVal;
-        this.leaseFee = leaseFee;
+    public LeaseContract(int dealershipId, LocalDate date, String name, String email, Vehicle vehicleSold) {
+        super(dealershipId, String.valueOf(date), name, email, vehicleSold);
+        //this.id=id;
+        this.expectedEndingVal = (getVehicleSold().getPrice()-(getVehicleSold().getPrice()*0.5));
+        this.leaseFee = (getVehicleSold().getPrice()*0.07);
     }
 
     // Abstract methods

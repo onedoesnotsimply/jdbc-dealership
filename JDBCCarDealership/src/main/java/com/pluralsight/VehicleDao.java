@@ -77,6 +77,41 @@ public class VehicleDao {
 
     }
 
+    public Vehicle getVehicleByVin(int searchVin) {
+        Vehicle vehicle = null;
+        String query = "SELECT * FROM vehicles WHERE vin = ?";
+
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);){
+
+            preparedStatement.setInt(1,searchVin);
+
+            try(ResultSet resultSet = preparedStatement.executeQuery();){
+                if (resultSet.next()){
+                    //do {
+                        int vin = resultSet.getInt("vin");
+                        int year = resultSet.getInt("year");
+                        String make = resultSet.getString("make");
+                        String model = resultSet.getString("model");
+                        String vehicleType = resultSet.getString("vehicleType");
+                        String color = resultSet.getString("color");
+                        int odometer = resultSet.getInt("odometer");
+                        double price = resultSet.getDouble("price");
+
+                        vehicle = new Vehicle(vin,year,make,model,vehicleType,color,odometer,price);
+
+                    //} while (resultSet.next());
+                } else {
+                    System.out.println("No vehicle found");
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return vehicle;
+    }
+
     public List<Vehicle> getVehiclesByType(int dealershipId, String searchType){
         List<Vehicle> vehicles = new ArrayList<>();
         String query = "SELECT * FROM vehicles WHERE vin IN " +
