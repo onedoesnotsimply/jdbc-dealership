@@ -13,16 +13,14 @@ public class Vehicle {
 
     @Override
     public String toString() {
-        return "Vehicle{" +
-                "vin=" + vin +
-                ", year=" + year +
-                ", make='" + make + '\'' +
-                ", model='" + model + '\'' +
-                ", vehicleType='" + vehicleType + '\'' +
-                ", color='" + color + '\'' +
-                ", odometer=" + odometer +
-                ", price=" + price +
-                '}';
+        return "VIN\t" + vin + '\n' +
+                "Year\t" + year + '\n' +
+                "Make\t" + make + '\n' +
+                "Model\t" + model + '\n' +
+                "VehicleType\t" + vehicleType + '\n' +
+                "Color\t" + color + '\n' +
+                "Odometer\t" + odometer + '\n'+
+                "Price\t" + price + '\n';
     }
 
     public Vehicle(int vin, int year, String make, String model, String vehicleType, String color, int odometer, double price) {

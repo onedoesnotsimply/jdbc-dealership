@@ -24,6 +24,13 @@ public class SalesContract extends Contract {
         this.isFinanced = isFinanced;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() +
+                "Financed\t" + isFinanced + '\n' +
+                "----------------------------\n";
+    }
+
     // Override methods
     @Override
     public double getTotalPrice() { // The combined cost of everything

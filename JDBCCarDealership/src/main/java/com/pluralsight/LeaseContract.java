@@ -14,6 +14,14 @@ public class LeaseContract extends Contract{
         this.leaseFee = (getVehicleSold().getPrice()*0.07);
     }
 
+    @Override
+    public String toString() {
+        return super.toString() +
+                "Expected Ending Value\t" + expectedEndingVal + '\n' +
+                "LeaseFee\t%.2f".formatted(leaseFee) + '\n' +
+                "----------------------------\n";
+    }
+
     // Abstract methods
     @Override
     public double getTotalPrice() {

@@ -2,7 +2,6 @@ package com.pluralsight;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -21,7 +20,7 @@ public class UserInterface {
     public void setDealership(){
         DealershipDao dealershipDao = new DealershipDao(dataSource);
         List<Dealership> dealerships = dealershipDao.getAllDealerships();
-        System.out.println("Dealership Select");
+        System.out.println("\n\tDealership Selection");
         dealerships.forEach(System.out::println);
         System.out.print("Enter the ID of the dealership you would like to select : ");
         int idChoice = scanner.nextInt();
@@ -35,9 +34,8 @@ public class UserInterface {
         VehicleDao vehicleDao = new VehicleDao(dataSource);
         SalesDao salesDao = new SalesDao(dataSource);
         LeaseDao leaseDao = new LeaseDao(dataSource);
-        // LeaseDao leaseDao = new LeaseDao(dataSource);
         setDealership();
-        //init();
+
         while(true) {
             System.out.printf("\nWelcome to %s\n",this.dealership.getName());
             System.out.println("Menu Screen");

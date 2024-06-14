@@ -192,9 +192,9 @@ public class VehicleDao {
 
     public List<Vehicle> getVehiclesByColor(int dealershipId, String searchColor) {
         List<Vehicle> vehicles = new ArrayList<>();
-        String query = "SELECT * FROM vehicles WHERE vin = IN " +
+        String query = "SELECT * FROM vehicles WHERE vin IN " +
                 "(SELECT vin FROM inventory WHERE dealership_id = ?) " +
-                "AND color LIKE = ? AND sold = 0";
+                "AND color LIKE ? AND sold = 0";
 
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)){

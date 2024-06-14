@@ -114,12 +114,12 @@ public class Dealership {
 
     @Override
     public String toString() {
-        return "Dealership{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
+        return "----------------------------\n" +
+                "ID\t" + id + '\n' +
+                "Name\t" + name + '\n' +
+                "Address\t" + address + '\n' +
+                "Phone\t" + phone + '\n' +
+                "----------------------------\n";
     }
 
 // Getters and setters

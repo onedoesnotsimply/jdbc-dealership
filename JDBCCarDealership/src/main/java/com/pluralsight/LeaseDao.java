@@ -14,6 +14,40 @@ public class LeaseDao {
         this.dataSource = dataSource;
     }
 
+    public List<LeaseContract> getLastTenLeaseContracts() {
+        List<LeaseContract> leaseContracts = new ArrayList<>();
+        String query = "SELECT * FROM lease_contracts ORDER BY lease_date LIMIT 10";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery();){
+
+            while (resultSet.next()){
+                //int id = resultSet.getInt(1);
+                int dealershipId = resultSet.getInt(2);
+                LocalDate leaseDate = resultSet.getDate(3).toLocalDate();
+                String name = resultSet.getString(4);
+                String email = resultSet.getString(5);
+                int vin = resultSet.getInt(6);
+                int year = resultSet.getInt(7);
+                String make = resultSet.getString(8);
+                String model = resultSet.getString(9);
+                String vehicleType = resultSet.getString(10);
+                String color = resultSet.getString(11);
+                int odometer = resultSet.getInt(12);
+                double price = resultSet.getDouble(13);
+
+                Vehicle vehicle = new Vehicle(vin,year,make,model,vehicleType,color,odometer,price);
+                LeaseContract leaseContract = new LeaseContract(dealershipId,leaseDate,name,email,vehicle);
+
+                leaseContracts.add(leaseContract);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return leaseContracts;
+    }
+
     public List<LeaseContract> getAllLeaseContracts() {
         List<LeaseContract> leaseContracts = new ArrayList<>();
         String query = "SELECT * FROM lease_contracts ORDER BY lease_date";
@@ -36,8 +70,6 @@ public class LeaseDao {
                 String color = resultSet.getString(11);
                 int odometer = resultSet.getInt(12);
                 double price = resultSet.getDouble(13);
-                double expectedEndingPrice = resultSet.getDouble(14);
-                double leaseFee = resultSet.getDouble(15);
 
                 Vehicle vehicle = new Vehicle(vin,year,make,model,vehicleType,color,odometer,price);
                 LeaseContract leaseContract = new LeaseContract(dealershipId,leaseDate,name,email,vehicle);

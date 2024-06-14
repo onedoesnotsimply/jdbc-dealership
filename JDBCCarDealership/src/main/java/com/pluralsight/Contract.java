@@ -11,11 +11,21 @@ public abstract class Contract {
     private double monthlyPayment;
 
     public Contract(int dealershipId, String date, String name, String email, Vehicle vehicleSold) {
-        //this.id=id;
+        this.dealershipId = dealershipId;
         this.date = date;
         this.name = name;
         this.email = email;
         this.vehicleSold = vehicleSold;
+    }
+
+    @Override
+    public String toString() {
+        return "----------------------------\n" +
+                "Dealership ID\t" + dealershipId + '\n' +
+                "Date\t" + date + '\n' +
+                "Name\t" + name + '\n' +
+                "Email\t" + email + '\n' +
+                vehicleSold;
     }
 
     // Abstract methods

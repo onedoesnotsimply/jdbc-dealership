@@ -1,8 +1,6 @@
 package com.pluralsight;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,14 +23,19 @@ public class AdminUserInterface {
     }
 
     public void adminDisplay() {
-        //init(); // Populate the contracts array
-        //Collections.reverse(contracts);
+        SalesDao salesDao = new SalesDao(dataSource);
+        LeaseDao leaseDao = new LeaseDao(dataSource);
+
         while(true){
-            System.out.println("Admin Menu");
-            System.out.println("1) List All Sales Contracts");
-            System.out.println("2) List All Lease Contracts");
-            System.out.println("3) List Last 10 Contracts");
-            System.out.println("5) Return to User Interface");
+            System.out.println("""
+                    Admin Menu
+                    --------------------
+                    1) List All Sales Contracts
+                    2) List All Lease Contracts
+                    3) List Last 10 Sales Contracts
+                    4) List Last 10 Lease Contracts
+                    0) Return to Dealership Select
+                    """);
 
             Scanner scanner = new Scanner(System.in);
             int choice = scanner.nextInt();
@@ -45,9 +48,12 @@ public class AdminUserInterface {
                     getAllLeaseContracts(leaseDao);
                     break;
                 case 3:
-                    getLastTenContracts();
+                    getLastTenSalesContracts(salesDao);
                     break;
                 case 4:
+                    getLastTenLeaseContracts(leaseDao);
+                    break;
+                case 0:
                     UserInterface ui = new UserInterface(dataSource);
                     ui.display();
                     break;
@@ -63,23 +69,19 @@ public class AdminUserInterface {
         leaseContracts.forEach(System.out::println);
     }
 
-    public static void getLastTenContracts() {
-        for (int i = 0; (i < 10 && i < contracts.size()); i++){
-            System.out.println(contracts.get(i));
-        }
+    public static void getLastTenSalesContracts(SalesDao salesDao) {
+        List<SalesContract> salesContracts = salesDao.getLastTenSalesContracts();
+        salesContracts.forEach(System.out::println);
+    }
+
+    public static void getLastTenLeaseContracts(LeaseDao leaseDao) {
+        List<LeaseContract> leaseContracts = leaseDao.getLastTenLeaseContracts();
+        leaseContracts.forEach(System.out::println);
     }
 
     public static void getAllSalesContracts(SalesDao salesDao) {
         List<SalesContract> salesContracts = salesDao.getAllSalesContracts();
+        salesContracts.forEach(System.out::println);
     }
 
-    private void init() {
-        contracts = ContractDataManager.getContracts();
-    }
-
-    public static void getAllContracts() {
-        for (String contract : contracts){
-            System.out.println(contract);
-        }
-    }
 }

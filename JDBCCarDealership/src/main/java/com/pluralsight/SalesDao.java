@@ -1,10 +1,9 @@
 package com.pluralsight;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SalesDao {
@@ -14,8 +13,74 @@ public class SalesDao {
         this.dataSource = dataSource;
     }
 
+    public List<SalesContract> getLastTenSalesContracts() {
+        List<SalesContract> salesContracts = new ArrayList<>();
+        String query = "SELECT * FROM sales_contracts ORDER BY sales_date LIMIT 10";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery();){
+
+            while (resultSet.next()){
+                //int id = resultSet.getInt(1);
+                int dealershipId = resultSet.getInt(2);
+                LocalDate salesDate = resultSet.getDate(3).toLocalDate();
+                String name = resultSet.getString(4);
+                String email = resultSet.getString(5);
+                int vin = resultSet.getInt(6);
+                int year = resultSet.getInt(7);
+                String make = resultSet.getString(8);
+                String model = resultSet.getString(9);
+                String vehicleType = resultSet.getString(10);
+                String color = resultSet.getString(11);
+                int odometer = resultSet.getInt(12);
+                double price = resultSet.getDouble(13);
+                boolean isFinanced = resultSet.getBoolean(14);
+
+                Vehicle vehicle = new Vehicle(vin,year,make,model,vehicleType,color,odometer,price);
+                SalesContract salesContract = new SalesContract(dealershipId, salesDate,name,email,vehicle, isFinanced);
+
+                salesContracts.add(salesContract);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return salesContracts;
+    }
+
     public List<SalesContract> getAllSalesContracts() {
-        return null;
+        List<SalesContract> salesContracts = new ArrayList<>();
+        String query = "SELECT * FROM sales_contracts ORDER BY sales_date";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery();){
+
+            while (resultSet.next()){
+                //int id = resultSet.getInt(1);
+                int dealershipId = resultSet.getInt(2);
+                LocalDate salesDate = resultSet.getDate(3).toLocalDate();
+                String name = resultSet.getString(4);
+                String email = resultSet.getString(5);
+                int vin = resultSet.getInt(6);
+                int year = resultSet.getInt(7);
+                String make = resultSet.getString(8);
+                String model = resultSet.getString(9);
+                String vehicleType = resultSet.getString(10);
+                String color = resultSet.getString(11);
+                int odometer = resultSet.getInt(12);
+                double price = resultSet.getDouble(13);
+                boolean isFinanced = resultSet.getBoolean(14);
+
+                Vehicle vehicle = new Vehicle(vin,year,make,model,vehicleType,color,odometer,price);
+                SalesContract salesContract = new SalesContract(dealershipId, salesDate,name,email,vehicle, isFinanced);
+
+                salesContracts.add(salesContract);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return salesContracts;
     }
 
     public void addSalesContract(int dealershipId, SalesContract salesContract){
